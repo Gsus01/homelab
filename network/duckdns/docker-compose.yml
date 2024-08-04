@@ -1,0 +1,21 @@
+services:
+  duckdns:
+    image: lscr.io/linuxserver/duckdns:latest
+    container_name: duckdns
+    network_mode: host #optional
+    environment:
+      PUID: 1000 #optional
+      PGID: 1000 #optional
+      TZ: Europe/Madrid #optional
+      SUBDOMAINS: jpal,jpalcodimd
+      FILE__TOKEN: /run/secrets/duckdns_token
+      UPDATE_IP: ipv4 #optional
+      LOG_FILE: TRUE #optional
+    volumes:
+      - /path/to/duckdns/config:/config #optional
+    secrets:
+      - duckdns_token
+    restart: unless-stopped
+secrets:
+  duckdns_token:
+    file: ./.secret
