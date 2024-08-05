@@ -12,7 +12,7 @@ services:
       UPDATE_IP: ipv4 #optional
       LOG_FILE: TRUE #optional
     volumes:
-      - ~/homelab/network/duckdns/config:/config #optional
+      - ./config:/config #optional
     secrets:
       - duckdns_token
     restart: unless-stopped
