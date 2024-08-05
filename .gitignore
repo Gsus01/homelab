@@ -1,0 +1,46 @@
+# media
+media/*/backups
+media/*/cache
+media/*/config
+media/*/data
+media/*/downloads
+media/*/media
+media/*/movies
+media/*/tv
+
+# monitor
+monitor/*/grafana
+monitor/*/prometheus
+monitor/*/data
+
+# network
+network/*/certs
+network/*/dnsmasq.d
+network/*/logs
+network/*/pihole
+network/*/providers
+network/*/step
+network/*/wireguard
+
+# private
+private/*/backups
+private/*/config
+private/*/configs
+private/*/data
+private/*/files
+private/*/icons
+private/*/import
+private/*/logs
+private/*/servers
+
+# public
+public/*/data
+public/*/database
+
+# hidden files
+.*
+!.*.template
+
+# log files
+*.log
+*.status
