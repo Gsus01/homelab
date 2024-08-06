@@ -15,9 +15,9 @@ monitor/*/data
 
 # network
 network/*/certs
-network/*/dnsmasq.d
+network/*/etc-dnsmasq.d
 network/*/logs
-network/*/pihole
+network/*/etc-pihole
 network/*/providers
 network/*/step
 network/*/wireguard
