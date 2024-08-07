@@ -1,0 +1,31 @@
+services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      - 80:80
+      # - 443:443
+    networks:
+      traefik:
+        aliases:
+          - proxy.traefik
+    volumes:
+      - ./logs:/var/log/traefik:rw
+      - ./certs:/etc/traefik/certs:rw
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "traefik"
+
+      traefik.http.routers.traefik.entrypoints: "web"
+      traefik.http.routers.traefik.rule: "Host(`traefik.jpal.es`)"
+      traefik.http.routers.traefik.service: "api@internal"
+
+networks:
+  traefik:
+    name: traefik
+    ipam:
+      config:
+        - subnet: 192.168.3.0/24
