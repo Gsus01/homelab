@@ -33,6 +33,9 @@ private/*/import
 private/*/logs
 private/*/servers
 
+# file
+file/syncthing/config
+
 # public
 public/*/data
 public/*/database

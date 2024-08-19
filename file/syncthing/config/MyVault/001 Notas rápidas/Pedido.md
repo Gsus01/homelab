@@ -1,5 +1,0 @@
-- Rabas
-- Tortitas de camaron alioli
-- Bravas
-- Ensalada de pimientos caramelizados y tronco de bonito
-- Pudding de cabracho con mahonesa
