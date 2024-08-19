@@ -34,7 +34,9 @@ services:
       - etc_wireguard:/etc/wireguard
     ports:
       - "51820:51820/udp"
-      - "51821:51821/tcp"
+      # - "51821:51821/tcp"
+    networks:
+      - traefik
     restart: unless-stopped
     cap_add:
       - NET_ADMIN
@@ -43,3 +45,15 @@ services:
     sysctls:
       - net.ipv4.ip_forward=1
       - net.ipv4.conf.all.src_valid_mark=1
+
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "traefik"
+
+      traefik.http.routers.wireguard.entrypoints: "web"
+      traefik.http.routers.wireguard.rule: "Host(`wireguard.jpal.es`)"
+      traefik.http.services.wireguard.loadbalancer.server.port: "51821"
+
+networks:
+  traefik:
+    external: true

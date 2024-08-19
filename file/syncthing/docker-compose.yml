@@ -1,0 +1,33 @@
+services:
+  syncthing:
+    image: lscr.io/linuxserver/syncthing:latest
+    container_name: syncthing
+    hostname: syncthing #optional
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+    volumes:
+      - ./config:/config
+      - /mnt/raid1/syncthing/obsidian-vault:/data1
+    ports:
+      # - 8384:8384
+      - 22000:22000/tcp
+      - 22000:22000/udp
+      - 21027:21027/udp
+    restart: unless-stopped
+
+    networks:
+      - traefik
+
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "traefik"
+        
+      traefik.http.routers.sycthing.entrypoints: "web"
+      traefik.http.routers.syncthing.rule: "Host(`syncthing.jpal.es`)"
+      traefik.http.services.syncthing.loadbalancer.server.port: "8384"
+
+networks:
+  traefik:
+    external: true

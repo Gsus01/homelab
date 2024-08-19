@@ -1,0 +1,20 @@
+services:
+  samba:
+    container_name: samba
+    image: elswork/samba
+    environment:
+      TZ: 'Europe/Madrid'
+    networks:
+      - default
+    ports:
+      - "139:139"
+      - "445:445"
+    restart: unless-stopped
+    volumes:
+      - /mnt/raid1:/share/folder
+      #- /path/to/be/shared:/share/folder
+    command: '-u "1001:1002:jesus:jesus:avionetas" -s "SmbShare:/share/folder:rw:jesus"'
+    # command: '-u "uid:guid:username:groupname:put-any-password-here" -s "SmbShare:/share/folder:rw:username"'
+
+# networks:
+  # default:
