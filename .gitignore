@@ -47,3 +47,6 @@ public/*/database
 # log files
 *.log
 *.status
+
+
+file/rclone/rclone-config/rclone.conf

@@ -19,7 +19,7 @@ accesslog:
 # -- (Optional) Enable API and Dashboard here, don't do in production
 api:
   dashboard: true
-  # insecure: true
+  insecure: true
 
 # -- Change EntryPoints here...
 entryPoints:
@@ -37,28 +37,29 @@ entryPoints:
 
 # -- Configure your CertificateResolver here...
 certificatesResolvers:
-#   staging:
-#     acme:
-#       email: 3arcintel@gmail.com
-#       storage: /etc/traefik/certs/acme.json
-#       caserver: "https://acme-staging-v02.api.letsencrypt.org/directory"
-#       -- (optional) remove this section, when using dns challenge
-#       httpchallenge:
-#         entrypoint: web
-#       -- (optional) configure dns challenge
-#       dnschallenge:
-#         provider: your-resolver (e.g. cloudflare)
-#         resolvers:
-#           - "1.1.1.1:53"
-#           - "8.8.8.8:53"
-  production:
-    acme:
-      email: jesukete@gmail.com
-      storage: /etc/traefik/certs/acme.json
-#       caServer: "https://acme-v02.api.letsencrypt.org/directory"
+   cloudflare:
+     acme:
+       email: jesukete@gmail.com
+       storage: /etc/traefik/certs/cloudflare-acme.json
+       # caserver: "https://acme-staging-v02.api.letsencrypt.org/directory"
+       # -- (optional) remove this section, when using dns challenge
+       # keyType: EC256
+       # httpchallenge:
+       #   entrypoint: web
+       # -- (optional) configure dns challenge
+       dnsChallenge:
+         provider: cloudflare 
+         resolvers:
+            - "1.1.1.1:53"
+            - "8.8.8.8:53"
+# production:
+#   acme:
+#     email: jesukete@gmail.com
+#     storage: /etc/traefik/certs/acme.json
+#      caServer: "https://acme-v02.api.letsencrypt.org/directory"
 #       -- (Optional) Remove this section, when using DNS Challenge
-      httpChallenge:
-        entryPoint: web
+#     httpChallenge:
+#        entryPoint: web
 #       -- (Optional) Configure DNS Challenge
 #       dnsChallenge:
 #         provider: your-resolver (e.g. cloudflare)

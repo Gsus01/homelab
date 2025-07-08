@@ -1,0 +1,11 @@
+services:
+  rclone:
+    image: rclone/rclone:latest
+    container_name: rclone_onedrive_sync
+    entrypoint: ["/bin/sh", "-c"]
+    volumes:
+      - ~/homelab/tools/overleaf-toolkit/data/overleaf/data/compiles:/data:ro
+      - ./rclone-config:/config/rclone:ro
+      - ./sync.sh:/sync.sh:ro
+    command: "/sync.sh"
+    restart: unless-stopped

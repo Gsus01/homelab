@@ -1,0 +1,14 @@
+services:
+  cloudflare-ddns:
+    image: oznu/cloudflare-ddns:latest
+    restart: always
+    environment:
+      - API_KEY_FILE=/run/secrets/api_key
+      - ZONE=jpabreu.com
+      - PROXIED=false
+    secrets:
+      - api_key
+
+secrets:
+  api_key:
+    file: ./api_key.txt

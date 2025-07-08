@@ -1,0 +1,7 @@
+#!/bin/sh
+while true; do
+  rclone sync /data overleaf:backups/current \
+    --backup-dir overleaf:backups/archive/$(date +%Y%m%d_%H%M%S) \
+    --progress
+  sleep 300
+done

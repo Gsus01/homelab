@@ -5,11 +5,15 @@ services:
     restart: unless-stopped
     ports:
       - 80:80
-      # - 443:443
+      - 8080:8080
+      # - 81:80
+      - 443:443
     networks:
       traefik:
         aliases:
           - proxy.traefik
+    environment:
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
     volumes:
       - ./logs:/var/log/traefik:rw
       - ./certs:/etc/traefik/certs:rw
@@ -19,9 +23,15 @@ services:
       traefik.enable: "true"
       traefik.docker.network: "traefik"
 
-      traefik.http.routers.traefik.entrypoints: "web"
-      traefik.http.routers.traefik.rule: "Host(`traefik.jpal.es`)"
+      traefik.http.routers.traefik.entrypoints: "web,websecure"
+      traefik.http.routers.traefik.rule: "Host(`traefik.jpabreu.com`)"
       traefik.http.routers.traefik.service: "api@internal"
+      traefik.http.routers.traefik.tls: "true"
+      traefik.http.routers.traefik.tls.certresolver: "cloudflare"
+
+      traefik.http.routers.api.tls.domains[0].main: "mydomain.com"
+      traefik.http.routers.api.tls.domains[0].sans : "*.mydomain.com"
+      traefik.http.routers.api.tls.certResolver : "myresolver"
 
 networks:
   traefik:
