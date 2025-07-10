@@ -33,6 +33,10 @@ private/*/import
 private/*/logs
 private/*/servers
 
+# dashboard
+
+dashboard/homarr/homarr
+
 # file
 file/syncthing/config
 file/*/data
