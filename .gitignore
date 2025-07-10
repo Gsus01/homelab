@@ -35,6 +35,8 @@ private/*/servers
 
 # file
 file/syncthing/config
+file/*/data
+file/*/etc
 
 # public
 public/*/data

@@ -29,9 +29,9 @@ services:
       traefik.http.routers.traefik.tls: "true"
       traefik.http.routers.traefik.tls.certresolver: "cloudflare"
 
-      traefik.http.routers.api.tls.domains[0].main: "mydomain.com"
-      traefik.http.routers.api.tls.domains[0].sans : "*.mydomain.com"
-      traefik.http.routers.api.tls.certResolver : "myresolver"
+      traefik.http.routers.wildcard.tls.domains[0].main: "jpabreu.com"
+      traefik.http.routers.wildcard.tls.domains[0].sans : "*.jpabreu.com"
+      traefik.http.routers.wildcard.tls.certResolver : "cloudflare"
 
 networks:
   traefik:

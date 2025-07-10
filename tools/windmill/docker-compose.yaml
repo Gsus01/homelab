@@ -1,0 +1,135 @@
+version: "3.7"
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "${LOG_MAX_SIZE:-20m}"
+    max-file: "${LOG_MAX_FILE:-10}"
+    compress: "true"
+
+services:
+  db:
+    deploy:
+      replicas: 1
+    image: postgres:16
+    shm_size: 1g
+    restart: unless-stopped
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    expose:
+      - 5432
+    # El puerto de la base de datos no necesita estar expuesto al exterior
+    # ports:
+    #   - 5432:5432
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DB: ${POSTGRES_DB:-windmill}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging: *default-logging
+    networks:
+      - default
+
+  windmill_server:
+    image: ${WM_IMAGE}
+    pull_policy: always
+    deploy:
+      replicas: 1
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - MODE=server
+      - BASE_URL=${BASE_URL} # Variable añadida para Windmill
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - worker_logs:/tmp/windmill/logs
+    logging: *default-logging
+    networks:
+      - default
+      - traefik # Conectado a la red de Traefik
+    labels:
+      # --- Etiquetas de Traefik ---
+      traefik.enable: "true"
+      traefik.docker.network: "traefik"
+
+      # Router principal con HTTPS
+      traefik.http.routers.windmill.entrypoints: "websecure"
+      traefik.http.routers.windmill.rule: "Host(`windmill.jpabreu.com`)"
+      traefik.http.routers.windmill.tls: "true"
+      traefik.http.routers.windmill.tls.certresolver: "cloudflare"
+      traefik.http.services.windmill.loadbalancer.server.port: "8000"
+
+      # Router HTTP para redirigir a HTTPS
+      traefik.http.routers.windmill-http.entrypoints: "web"
+      traefik.http.routers.windmill-http.rule: "Host(`windmill.jpabreu.com`)"
+      traefik.http.routers.windmill-http.middlewares: "traefik-https-redirect@docker"
+
+
+  windmill_worker:
+    image: ${WM_IMAGE}
+    pull_policy: always
+    deploy:
+      replicas: 3
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - MODE=worker
+      - WORKER_GROUP=default
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - worker_dependency_cache:/tmp/windmill/cache
+      - worker_logs:/tmp/windmill/logs
+    logging: *default-logging
+    networks:
+      - default
+
+  windmill_worker_native:
+    image: ${WM_IMAGE}
+    pull_policy: always
+    deploy:
+      replicas: 1
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - MODE=worker
+      - WORKER_GROUP=native
+      - NUM_WORKERS=8
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - worker_logs:/tmp/windmill/logs
+    logging: *default-logging
+    networks:
+      - default
+
+  lsp:
+    image: ghcr.io/windmill-labs/windmill-lsp:latest
+    pull_policy: always
+    restart: unless-stopped
+    volumes:
+      - lsp_cache:/pyls/.cache
+    logging: *default-logging
+    networks:
+      - default
+
+networks:
+  default:
+  traefik:
+    external: true
+
+volumes:
+  db_data: null
+  worker_dependency_cache: null
+  worker_logs: null
+  windmill_index: null
+  lsp_cache: null

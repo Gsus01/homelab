@@ -51,8 +51,11 @@ services:
       traefik.enable: "true"
       traefik.docker.network: "traefik"
 
-      traefik.http.routers.wireguard.entrypoints: "web"
-      traefik.http.routers.wireguard.rule: "Host(`wireguard.jpal.es`)"
+      traefik.http.routers.wireguard.entrypoints: "web, websecure"
+      traefik.http.routers.wireguard.rule: "Host(`wireguard.jpabreu.com`)"
+      traefik.http.routers.wireguard.tls: "true"
+      traefik.http.routers.wireguard.tls.certresolver: "cloudflare"
+
       traefik.http.services.wireguard.loadbalancer.server.port: "51821"
 
 networks:

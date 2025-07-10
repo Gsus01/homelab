@@ -1,0 +1,28 @@
+services:
+  couchdb:
+    image: couchdb
+    container_name: couchdb
+    restart: unless-stopped
+    user: 1000:1000
+    # ports:
+    #   - 5984:5984
+    networks:
+      - traefik
+    volumes:
+      - ./data:/opt/couchdb/data
+      - ./etc:/opt/couchdb/etc/local.d
+    environment:
+      COUCHDB_USER: ${COUCHDB_USER}
+      COUCHDB_PASSWORD: ${COUCHDB_PASSWORD}
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "traefik"
+      traefik.http.routers.couchdb.entrypoints: "web, websecure"
+      traefik.http.routers.couchdb.rule: "Host(`couchdb.jpabreu.com`)"
+      traefik.http.routers.couchdb.tls: "true"
+      traefik.http.routers.couchdb.tls.certresolver: "cloudflare"
+      traefik.http.services.couchdb.loadbalancer.server.port: "5984"
+
+networks:
+  traefik:
+    external: true
