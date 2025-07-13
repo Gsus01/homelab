@@ -1,0 +1,17 @@
+services:
+  flaresolverr:
+    image: flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    restart: unless-stopped
+    networks:
+      - traefik
+    environment:
+      - LOG_LEVEL=info
+      - TZ=Europe/Madrid
+      - PORT=8191
+    ports:
+      - "8191:8191"
+
+networks:
+  traefik:
+    external: true

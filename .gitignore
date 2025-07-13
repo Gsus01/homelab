@@ -39,6 +39,7 @@ dashboard/homarr/homarr
 
 # file
 file/syncthing/config
+file/*/config
 file/*/data
 file/*/etc
 

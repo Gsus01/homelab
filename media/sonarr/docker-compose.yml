@@ -1,0 +1,27 @@
+services:
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    restart: unless-stopped
+    networks:
+      - traefik
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+    volumes:
+      - ./config:/config
+      - /mnt/raid1/media:/media
+      - /mnt/raid1/download:/downloads
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "traefik"
+      traefik.http.routers.sonarr.entrypoints: "web, websecure"
+      traefik.http.routers.sonarr.rule: "Host(`sonarr.jpabreu.com`)"
+      traefik.http.routers.sonarr.tls: "true"
+      traefik.http.routers.sonarr.tls.certresolver: "cloudflare"
+      traefik.http.services.sonarr.loadbalancer.server.port: "8989"
+
+networks:
+  traefik:
+    external: true
