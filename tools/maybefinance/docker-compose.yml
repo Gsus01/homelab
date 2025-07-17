@@ -1,0 +1,89 @@
+# docker-compose.yml para Maybe Finance
+
+# --- Anclas de configuración para no repetir código ---
+x-db-env: &db_env
+  POSTGRES_USER: maybe_user
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  POSTGRES_DB: maybe_production
+
+x-rails-env: &rails_env
+  <<: *db_env
+  SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+  SELF_HOSTED: "true"
+  RAILS_FORCE_SSL: "true"
+  RAILS_ASSUME_SSL: "true"
+  DB_HOST: db
+  DB_PORT: 5432
+  REDIS_URL: redis://redis:6379/1
+  OPENAI_ACCESS_TOKEN: ${OPENAI_ACCESS_TOKEN}
+
+services:
+  web:
+    image: ghcr.io/maybe-finance/maybe:latest
+    container_name: maybe_web
+    restart: unless-stopped
+    volumes:
+      - ./storage:/rails/storage
+    environment:
+      <<: *rails_env
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    networks:
+      - traefik
+      - default
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "traefik"
+      traefik.http.routers.maybe.entrypoints: "web, websecure"
+      traefik.http.routers.maybe.rule: "Host(`maybe.jpabreu.com`)"
+      traefik.http.routers.maybe.tls: "true"
+      traefik.http.routers.maybe.tls.certresolver: "cloudflare"
+      traefik.http.services.maybe.loadbalancer.server.port: "3000"
+
+  worker:
+    image: ghcr.io/maybe-finance/maybe:latest
+    container_name: maybe_worker
+    command: bundle exec sidekiq
+    restart: unless-stopped
+    depends_on:
+      redis: { condition: service_healthy }
+    environment:
+      <<: *rails_env
+    networks:
+      - default
+
+  db:
+    image: postgres:16
+    container_name: maybe_postgres
+    restart: unless-stopped
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    environment:
+      <<: *db_env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - default
+
+  redis:
+    image: redis:latest
+    container_name: maybe_redis
+    restart: unless-stopped
+    volumes:
+      - ./redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - default
+
+networks:
+  traefik:
+    external: true
+  default:

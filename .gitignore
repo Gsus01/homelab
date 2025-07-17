@@ -43,6 +43,12 @@ file/*/config
 file/*/data
 file/*/etc
 
+# tools postgres  redis  storage
+tools/*/postgres
+tools/*/redis
+tools/*/storage
+tools/*/data
+
 # public
 public/*/data
 public/*/database
