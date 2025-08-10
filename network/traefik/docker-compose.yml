@@ -18,6 +18,7 @@ services:
       - ./logs:/var/log/traefik:rw
       - ./certs:/etc/traefik/certs:rw
       - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./providers:/etc/traefik/providers:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
       traefik.enable: "true"
